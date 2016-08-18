@@ -1,0 +1,14 @@
+{
+  "name": "es_remove",
+  "version": "1.0.0",
+  "description": "Delete Documents By Query",
+  "bin": {
+    "es_remove": "./index.js"
+  },
+  "author": "Mikhail Shauneu",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^2.9.0",
+    "elasticsearch": "^11.0.1"
+  }
+}
