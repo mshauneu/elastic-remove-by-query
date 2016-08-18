@@ -44,10 +44,7 @@ function remove(index, type, query) {
     }
 
     var bulk = {};
-    bulk.body = [];
-    for (var hit of hits) {
-      bulk.body.push({ delete: { _index: 'tbdev', _type: 'event', _id: hit._id } });
-    }
+    bulk.body = hits.map(h => ({ delete: { _index: 'tbdev', _type: 'event', _id: h._id } }));
     yield client.bulk(bulk);
 
     remove(index, type, query);
