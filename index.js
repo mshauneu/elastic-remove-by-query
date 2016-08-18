@@ -2,6 +2,7 @@
 
 var elasticsearch = require('elasticsearch');
 var program = require('commander');
+var co = require('co');
 
 program
   .option('-u, --url', 'url, defaul is: `localhost:9200`')
@@ -33,20 +34,27 @@ function remove(index, type, query) {
     fields: []
   };
 
-  client.search(q, function (error, response) {
+  co(function *() {
+    var response = yield client.search(q);
     var hits = response.hits.hits;
+
     if (hits.length === 0) {
+      console.log('Finished');
       return;
     }
+
     var bulk = {};
     bulk.body = [];
-    hits.forEach(function(h) {
-      bulk.body.push({ delete: { _index: 'tbdev', _type: 'event', _id: h._id } });
-    });
+    for (var hit of hits) {
+      bulk.body.push({ delete: { _index: 'tbdev', _type: 'event', _id: hit._id } });
+    }
+    yield client.bulk(bulk);
 
-    client.bulk(bulk, function (error, response) {
-      remove(index, type, query);
-    });
+    remove(index, type, query);
+
+  }).catch(function(e) {
+    console.log(e);
   });
+
 }
 
